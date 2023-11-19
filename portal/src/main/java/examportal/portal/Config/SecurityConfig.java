@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 @EnableWebSecurity
 @Deprecated
 @CrossOrigin(origins = "*")
-// @CrossOrigin(origins = "https://exam-easy.up.railway.app")
+// @CrossOrigin(origins = {"https://exam-easy.up.railway.app"})
 public class SecurityConfig {
 
     private static final org.slf4j.Logger log  = LoggerFactory.getLogger(SecurityConfig.class);

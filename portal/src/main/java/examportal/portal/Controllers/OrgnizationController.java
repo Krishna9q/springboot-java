@@ -20,8 +20,8 @@ import examportal.portal.Payloads.OrgnizationDto;
 import examportal.portal.Services.OrgnizationService;
 
 @RestController
-// @CrossOrigin(origins = "*")
-@CrossOrigin(origins = {"https://exam-easy.up.railway.app"})
+@CrossOrigin(origins = "*")
+// @CrossOrigin(origins = {"https://exam-easy.up.railway.app"})
 public class OrgnizationController {
 
     Logger log = LoggerFactory.getLogger("OrgnizationController.class");
