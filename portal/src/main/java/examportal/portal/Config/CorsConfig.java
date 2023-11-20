@@ -12,7 +12,7 @@ public class CorsConfig {
     
       public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("https://exam-easy.up.railway.app/")
+                .allowedOrigins("http://exam-easy.up.railway.app/")
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
                 .allowCredentials(true);
     }
