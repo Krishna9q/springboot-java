@@ -1,5 +1,7 @@
 package examportal.portal.ServicesImpl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.JsonObject;
@@ -15,19 +17,20 @@ import okhttp3.Response;
 @Deprecated
 public class Auth0Service {
 
+     Logger log  = LoggerFactory.getLogger("Auth0Service.class");
+
     // private final String auth0ManagementAPIBaseUrl = "https://dev-mp3ifwfcpsy5t3ok.us.auth0.com";
       private final String auth0ManagementAPIBaseUrl = "https://dev-uil1ecwkoehr31jg.us.auth0.com";
     private final OkHttpClient client = new OkHttpClient();
 
     public String createUser(String email, String password, String token) throws Exception {
+        log.info("Auth0Service, createUser Method Started");
 
         System.out
                 .println("method statted  ==========================================================================");
         String clientId = "eztAo6qyd8H7WNYOEiQWqIMopdOiXRQ8";
         String connection = "Username-Password-Authentication";
         String res="";
-        System.out.println(token
-                + "token===========================================================================================");
         MediaType mediaType = MediaType.parse("application/json");
         String jsonBody = "{"
                 + "\"client_id\": \"" + clientId + "\","
@@ -51,8 +54,6 @@ public class Auth0Service {
         Response response = client.newCall(request).execute();
         if (response.isSuccessful()) {
             System.out.println("User created successfully");
-            System.out.println(
-                    "Auth0 response ====================================================================" + response);
                      try {
                         JsonObject jsonObject = JsonParser.parseString(response.body().string()).getAsJsonObject();
                         String id = jsonObject.get("_id").getAsString();
@@ -66,7 +67,7 @@ public class Auth0Service {
         } else {
             System.out.println("Failed to create user. Response: " + response.body().string());
         }
-
+        log.info("Auth0Service, createUser Method Ends");
         return res;
     }
 
