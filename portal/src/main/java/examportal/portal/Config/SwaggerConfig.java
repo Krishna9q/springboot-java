@@ -17,7 +17,8 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 public class SwaggerConfig {
 
     Logger log = LoggerFactory.getLogger("SwaggerConfig");
-      @Bean
+      
+    @Bean
     public OpenAPI openAPI(){
         log.info("SwaggerConfig ,openAPI Method Start");
         String schemeName ="ProExaminator";
