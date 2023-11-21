@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import examportal.portal.Entity.User;
 import examportal.portal.Exceptions.ResourceAlreadyExistException;
-
 import examportal.portal.Payloads.EmailDetails;
 import examportal.portal.Payloads.userDto;
 import examportal.portal.Repo.UserRepo;
@@ -39,7 +38,7 @@ public class UserserviceImpl implements UserService {
             throw new ResourceAlreadyExistException("user", "email", user.getEmail());
         } else {
             User newuser = new User();
-            newuser.setUserId(user.getSub());
+            newuser.setUserId(user.getUserId());
             newuser.setEmail(user.getEmail());
             newuser.setName(user.getName());
             newuser.setPicture(user.getPicture());

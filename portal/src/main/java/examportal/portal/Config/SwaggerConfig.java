@@ -17,8 +17,7 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 public class SwaggerConfig {
 
     Logger log = LoggerFactory.getLogger("SwaggerConfig");
-      
-    @Bean
+      @Bean
     public OpenAPI openAPI(){
         log.info("SwaggerConfig ,openAPI Method Start");
         String schemeName ="ProExaminator";
@@ -38,7 +37,7 @@ public class SwaggerConfig {
         )
         )
         .info(new Info()
-        .title("Exam-Portal Docmumentation")
+        .title("Exam-Portal Documentation")
         .description(("This Is Exam-Portal Application"))
         .version("1.0")
         .contact(new Contact().name("Krishnas.bca2022@ssism.org").email("Krishnas@ssism.org").url("WarehouseManagement.com"))
