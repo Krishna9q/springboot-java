@@ -13,7 +13,7 @@ public class CorsConfig {
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOrigin("https://exam-easy.up.railway.app"); // Replace with the actual URL of your Swagger UI
+        config.addAllowedOrigin("https://exam-easy.up.railway.app/"); // Replace with the actual URL of your Swagger UI
         config.addAllowedMethod("*");
         config.addAllowedHeader("*");
         source.registerCorsConfiguration("/**", config);
