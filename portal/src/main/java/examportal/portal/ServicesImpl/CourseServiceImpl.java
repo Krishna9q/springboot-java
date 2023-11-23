@@ -10,16 +10,22 @@ import org.springframework.stereotype.Service;
 
 import examportal.portal.Entity.Course;
 import examportal.portal.Entity.User;
+import examportal.portal.Payloads.CourseDto;
 import examportal.portal.Repo.CourseRepo;
 import examportal.portal.Repo.UserRepo;
 import examportal.portal.Services.CourseService;
 import jakarta.el.ELException;
+import net.bytebuddy.utility.RandomString;
 
 @Service
 public class CourseServiceImpl implements CourseService {
   @Autowired
   private CourseRepo courseRepo;
+  @Autowired
   private UserRepo userRepo;
+
+  @Autowired
+  private Auth0Service auth0Service;
 
   Logger log = LoggerFactory.getLogger("CourseServiceimpl.class");
 
@@ -49,9 +55,49 @@ public class CourseServiceImpl implements CourseService {
   }
 
   @Override
-  public Course addCourse(Course course) {
+  @Deprecated
+  public Course addCourse(CourseDto course) {
+
     log.info("CourseServiceimpl,addCourse Method Start");
-    Course c = this.courseRepo.save(course);
+
+    String response = "";
+
+    Course c = new Course();
+    c.setCourse_name(course.getCourse_name());
+    c.setUserId(course.getUserId());
+
+    for (String i : course.getMails()) {
+
+      String password = RandomString.make(8)+i;
+      User user = userRepo.findByEmail(i);
+
+      if (user != null) {
+        System.out.println("User Allready Exist");
+
+      } else {
+
+        try {
+          System.out.println("+++++++++++Auth0Service Method Enter");
+          response = this.auth0Service.createUser(i, password, course.getToken());
+          System.out.println("UserID++++++++++"+response);
+          // res = userId
+          User use = new User();
+          use.setUserId(response);
+          use.setEmail(i);
+          use.setPassword(password);
+          use.setRole("Student");
+          userRepo.save(use);
+
+        } catch (Exception e) {
+
+          e.printStackTrace();
+        }
+
+      }
+
+    }
+
+    this.courseRepo.save(c);
     log.info("CourseServiceimpl,addCourse Method Ends");
     return c;
   }
