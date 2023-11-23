@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import examportal.portal.Entity.Course;
 import examportal.portal.Entity.User;
+import examportal.portal.Exceptions.ResourceNotFoundException;
 import examportal.portal.Payloads.CourseDto;
 import examportal.portal.Repo.CourseRepo;
 import examportal.portal.Repo.UserRepo;
@@ -90,6 +91,7 @@ public class CourseServiceImpl implements CourseService {
 
         } catch (Exception e) {
 
+          System.out.println("Exception Occured in addCourse while creating user  +++++++++=========");
           e.printStackTrace();
         }
 
@@ -105,7 +107,7 @@ public class CourseServiceImpl implements CourseService {
   @Override
   public Course updateCourse(Course course) {
     log.info("CourseServiceimpl, updateCourse Method Start");
-    Course c = this.courseRepo.findById(course.getCourse_id()).orElseThrow(() -> new ELException("Course Not Found"));
+    Course c = this.courseRepo.findById(course.getCourse_id()).orElseThrow(()-> new ResourceNotFoundException("Course", "Course not Found ", course.getCourse_id()));
     c.setCourse_name(course.getCourse_name());
     c.setUserId(course.getUserId());
     log.info("CourseServiceimpl, updateCourse Method Ends");

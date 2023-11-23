@@ -40,8 +40,7 @@ public class SecurityConfig {
         log.info("SecurityConfig , filterChain Method Start ");
 
         http.authorizeRequests(authorizeRequests ->
-        authorizeRequests.requestMatchers(public_urls).permitAll().
-        requestMatchers("/student").authenticated())
+        authorizeRequests.requestMatchers(public_urls).permitAll().anyRequest().authenticated())
         // .authorizeRequests(authorizeRequests -> authorizeRequests.requestMatchers("/Swagger").permitAll())
         .oauth2ResourceServer(oauth2ResourceServer ->
         oauth2ResourceServer.jwt(jwt -> jwt.decoder(jwtDecoder())));
