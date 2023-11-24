@@ -15,7 +15,7 @@ import examportal.portal.Payloads.CourseDto;
 import examportal.portal.Repo.CourseRepo;
 import examportal.portal.Repo.UserRepo;
 import examportal.portal.Services.CourseService;
-import jakarta.el.ELException;
+
 import net.bytebuddy.utility.RandomString;
 
 @Service
@@ -36,7 +36,7 @@ public class CourseServiceImpl implements CourseService {
     List<Course> course = courseRepo.findAll();
     List<Course> courses = new ArrayList<>();
     for (Course course2 : course) {
-      User user = this.userRepo.findById(course2.getUserId()).orElseThrow(() -> new ELException("User Not found"));
+      User user = this.userRepo.findById(course2.getUserId()).orElseThrow(()-> new ResourceNotFoundException("User", "UserId", course2.getUserId()));
       course2.setUserName(user.getName());
       courses.add(course2);
     }
@@ -47,8 +47,8 @@ public class CourseServiceImpl implements CourseService {
   @Override
   public Course getCourseById(String getId) {
     log.info("CourseServiceimpl,getCourseById Method Start");
-    Course c = this.courseRepo.findById(getId).orElseThrow();
-    User user = this.userRepo.findById(c.getUserId()).orElseThrow();
+    Course c = this.courseRepo.findById(getId).orElseThrow(()-> new ResourceNotFoundException("Course", "CourseId", getId));
+    User user = this.userRepo.findById(c.getUserId()).orElseThrow(()-> new ResourceNotFoundException("User", "UserId", c.getUserId()));
     c.setUserName(user.getName());
     log.info("CourseServiceimpl,getCourseById Method Ends");
 
@@ -60,6 +60,9 @@ public class CourseServiceImpl implements CourseService {
   public Course addCourse(CourseDto course) {
 
     log.info("CourseServiceimpl,addCourse Method Start");
+    
+    userRepo.findById(course.getUserId()).orElseThrow(()-> new ResourceNotFoundException("User", "UserId", course.getUserId()));
+   
 
     String response = "";
 
