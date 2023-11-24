@@ -15,7 +15,7 @@ import examportal.portal.Payloads.CourseDto;
 import examportal.portal.Repo.CourseRepo;
 import examportal.portal.Repo.UserRepo;
 import examportal.portal.Services.CourseService;
-
+import jakarta.el.ELException;
 import net.bytebuddy.utility.RandomString;
 
 @Service
@@ -60,19 +60,17 @@ public class CourseServiceImpl implements CourseService {
   public Course addCourse(CourseDto course) {
 
     log.info("CourseServiceimpl,addCourse Method Start");
-    
-    userRepo.findById(course.getUserId()).orElseThrow(()-> new ResourceNotFoundException("User", "UserId", course.getUserId()));
-   
-
+   User us =  userRepo.findById(course.getUserId()).orElseThrow(() -> new ResourceNotFoundException("User", "UserId", course.getUserId()));
     String response = "";
 
     Course c = new Course();
     c.setCourse_name(course.getCourse_name());
     c.setUserId(course.getUserId());
+    c.setUserName(us.getName());
 
     for (String i : course.getMails()) {
 
-      String password = RandomString.make(8)+i;
+      String password = RandomString.make(8) + i;
       User user = userRepo.findByEmail(i);
 
       if (user != null) {
@@ -83,7 +81,7 @@ public class CourseServiceImpl implements CourseService {
         try {
           System.out.println("+++++++++++Auth0Service Method Enter");
           response = this.auth0Service.createUser(i, password, course.getToken());
-          System.out.println("UserID++++++++++"+response);
+          System.out.println("UserID++++++++++" + response);
           // res = userId
           User use = new User();
           use.setUserId(response);
@@ -94,7 +92,6 @@ public class CourseServiceImpl implements CourseService {
 
         } catch (Exception e) {
 
-          System.out.println("Exception Occured in addCourse while creating user  +++++++++=========");
           e.printStackTrace();
         }
 
@@ -110,7 +107,7 @@ public class CourseServiceImpl implements CourseService {
   @Override
   public Course updateCourse(Course course) {
     log.info("CourseServiceimpl, updateCourse Method Start");
-    Course c = this.courseRepo.findById(course.getCourse_id()).orElseThrow(()-> new ResourceNotFoundException("Course", "Course not Found ", course.getCourse_id()));
+    Course c = this.courseRepo.findById(course.getCourse_id()).orElseThrow(() -> new ELException("Course Not Found"));
     c.setCourse_name(course.getCourse_name());
     c.setUserId(course.getUserId());
     log.info("CourseServiceimpl, updateCourse Method Ends");
@@ -118,6 +115,7 @@ public class CourseServiceImpl implements CourseService {
   }
 
   @Override
+
   public void deleteCourseById(String getId) {
     log.info("CourseServiceimpl, deleteCourse Method Start");
     courseRepo.deleteById(getId);
