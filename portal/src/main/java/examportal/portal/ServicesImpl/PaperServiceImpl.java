@@ -56,6 +56,8 @@ public class PaperServiceImpl implements PaperService {
     Paper paper = new Paper();
     paper.setUserId(paperdDto.getUserId());
     paper.setOrgnizationId(paperdDto.getOrgnizationId());
+    paper.set_setup(true);
+    paper.set_Active(false);  
     
     Paper newpPaper = this.paperRepo.save(paper);
 

@@ -1,19 +1,14 @@
 package examportal.portal.ServicesImpl;
-
 import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import examportal.portal.Entity.User;
 import examportal.portal.Exceptions.ResourceAlreadyExistException;
 import examportal.portal.Exceptions.ResourceNotFoundException;
-
 import examportal.portal.Payloads.userDto;
 import examportal.portal.Repo.UserRepo;
-
 import examportal.portal.Services.UserService;
 
 @Service
@@ -59,7 +54,7 @@ public class UserserviceImpl implements UserService {
     public String sendmail(User user) {
 
         log.info("userService , send mail Method Start");
-        String msg = "This is your Creaditials for login \n User Name => "+user.getEmail()+"\n Password => "+user.getPassword();
+        String msg = "User Name => "+user.getEmail()+"\n Password => "+user.getPassword();
         String sub = "Login Creadintials for Login to EXAMEASY";
         String to = user.getEmail();
         emailServiceImpl.sendFormateMail(to, msg, sub);

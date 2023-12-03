@@ -1,7 +1,6 @@
 package examportal.portal.Services;
 
 import java.util.List;
-
 import examportal.portal.Entity.User;
 import examportal.portal.Payloads.userDto;
 
@@ -15,5 +14,5 @@ public  interface UserService {
 
     User getUserById(String userId);
 
-    // String createAuth0User(userDto users);
+    
 }
