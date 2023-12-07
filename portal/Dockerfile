@@ -35,6 +35,7 @@
 # CMD ["java", "-jar", "portal.jar"]
 
 FROM azul/zulu-openjdk:17-latest
+WORKDIR /portal
 VOLUME /tmp
 COPY build/libs/portal.jar portal.jar
 ENTRYPOINT ["java","-jar","portal.jar"]
