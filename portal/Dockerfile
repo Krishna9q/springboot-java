@@ -1,5 +1,5 @@
 FROM azul/zulu-openjdk:17.0.0
-# WORKDIR /porta
+WORKDIR /portal
 # COPY build.gradle
 # COPY settings.gradle
 # COPY gradlew
