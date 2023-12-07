@@ -3,7 +3,7 @@ WORKDIR /portal
 COPY build.gradle .
 COPY settings.gradle .
 COPY gradlew .
-
+COPY gradle/ ./gradle/
 COPY src/ ./src/
 CMD ./gradlew build
 COPY build/libs/portal.jar portal.jar
