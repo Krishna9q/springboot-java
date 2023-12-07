@@ -8,13 +8,13 @@ FROM azul/zulu-openjdk:17-latest
 
 # Copy the application JAR file into the container at /app
 CMD ./gradlew  build
-COPY build/libs/portal.jar /app/portal.jar
+# COPY build/libs/portal.jar /app/portal.jar
 
 # Expose the port that your Spring Boot application will run on
 EXPOSE 9090
 
 # Define the command to run your application
-CMD ["java", "-jar", "portal.jar"]
+CMD ["java", "-jar", "build/libs/portal.jar"]
 
 
 # FROM azul/zulu-openjdk:17.0.0
