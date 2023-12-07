@@ -27,7 +27,7 @@ COPY gradle/ ./gradle/
 COPY src/ ./src/
 
 # Build the application using Gradle
-RUN ./gradlew build
+RUN ./gradlew clean build
 
 # Copy the built JAR file to the container
 COPY build/libs/*.jar portal.jar
