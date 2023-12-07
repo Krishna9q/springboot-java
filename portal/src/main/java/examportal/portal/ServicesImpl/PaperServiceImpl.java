@@ -2,10 +2,16 @@ package examportal.portal.ServicesImpl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
+
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import examportal.portal.Entity.Assessment;
@@ -26,8 +32,9 @@ import examportal.portal.Repo.PaperRepo;
 import examportal.portal.Repo.QuestionsRepo;
 import examportal.portal.Repo.StudentRepo;
 import examportal.portal.Repo.UserRepo;
-import examportal.portal.Services.ExamDetailsService;
+// import examportal.portal.Services.ExamDetailsService;
 import examportal.portal.Services.PaperService;
+
 @Service
 public class PaperServiceImpl implements PaperService {
 
@@ -61,8 +68,8 @@ public class PaperServiceImpl implements PaperService {
   @Autowired
   private AttemptepaperRepo attemptepaperRepo;
 
-  @Autowired
-  private ExamDetailsService examDetailsService;
+  // @Autowired
+  // private ExamDetailsService examDetailsService;
 
   Logger log = LoggerFactory.getLogger("PaperServiceImpl");
 
@@ -78,21 +85,41 @@ public class PaperServiceImpl implements PaperService {
     paper.set_Active(false);
     Paper newpPaper = this.paperRepo.save(paper);
 
-    ExamDetails examDetails = this.examDetailsService.createExamDetails(paperdDto.getExamDetails());
+    ExamDetails examDetails = new ExamDetails();
+    examDetails.setAssessmentName(paperdDto.getExamDetails().getAssessmentName());
+    examDetails.setBranch(paperdDto.getExamDetails().getBranch());
+    examDetails.setExamDuration(paperdDto.getExamDetails().getExamDuration());
+    examDetails.setExamMode(paperdDto.getExamDetails().getExamMode());
+    examDetails.setSession(paperdDto.getExamDetails().getSession());
+    examDetails.set_Setup(true);
+    examDetails.set_Active(false);
+    examDetails.setPaperChecked(false);
+    examDetails.setExamRounds(paperdDto.getExamDetails().getExamRounds());
+    examDetails.setPaperId(newpPaper.getPaperId());
+    examDetails.setTotalMarks(paperdDto.getExamDetails().getTotalMarks());
+    examDetails.setMinimum_marks(paperdDto.getExamDetails().getMinimum_marks());
+    this.examDetailsRepo.save(examDetails);
 
     List<Questions> questionsList = paperdDto.getQuestions();
 
-    this.questionsRepo.saveAll(questionsList);
+    for (Questions questions : questionsList) {
+      questions.setPaperID(newpPaper.getPaperId());
+      this.questionsRepo.save(questions);
+    }
+
+    // this.questionsRepo.saveAll(questionsList);
 
     log.info("paperService Create paper method End's :");
     return newpPaper;
   }
 
   @Override
-  public List<PaperDto> getAllPaper() {
+  public List<PaperDto> getAllPaper(Integer pageNumber, Integer size, String sortField, String sortOrder) {
     log.info("paperService getAll paper method Starts :");
-
-    List<Paper> papers = this.paperRepo.findAll();
+    Sort sort = (sortOrder.equalsIgnoreCase("ASC")) ? Sort.by(sortField).ascending() : Sort.by(sortField).descending();
+    Pageable p = PageRequest.of(pageNumber, size, sort);
+    Page<Paper> pp = paperRepo.findAll(p);
+    List<Paper> papers = pp.getContent();
 
     List<PaperDto> paperDtos = new ArrayList<>();
 
@@ -202,13 +229,12 @@ public class PaperServiceImpl implements PaperService {
   @Override
   public List<ExamDetails> getAllPaperByUserId(String userId) {
     log.info("paperServiceImpl getAllPaperByUserId  method Starts");
-
     List<Paper> paper = this.paperRepo.findAllPaperByUserId(userId);
+   
     List<ExamDetails> examDetails = new ArrayList<>();
 
     for (Paper paper2 : paper) {
-      ExamDetails emd = new ExamDetails();
-      emd = this.examDetailsRepo.getExamDetailsByPaperID(paper2.getPaperId());
+      ExamDetails emd = this.examDetailsRepo.getExamDetailsByPaperID(paper2.getPaperId()); 
       emd.set_Active(paper2.is_Active());
       emd.set_Setup(paper2.is_setup());
       examDetails.add(emd);
@@ -220,14 +246,28 @@ public class PaperServiceImpl implements PaperService {
   }
 
   @Override
-  public String activatePaper(String paperId) {
+  public String activatePaper(String paperId, boolean active) {
     log.info("paperServiceImpl activatePaper  method Starts");
     Paper paper = this.paperRepo.findById(paperId)
         .orElseThrow(() -> new ResourceNotFoundException("Paper", "PaperId", paperId));
+    ExamDetails examDetails = this.examDetailsRepo.getExamDetailsByPaperID(paperId);
+    
+    if (active == true) {
+      paper.set_Active(false);
+      paper.set_setup(true);
+      examDetails.set_Active(false);
+      examDetails.set_Setup(true);
+      Paper ActivePaper = this.paperRepo.save(paper);
+      this.examDetailsRepo.save(examDetails);
+      return "Deactive successfully";
+    }else{
     paper.set_Active(true);
     paper.set_setup(false);
+    examDetails.set_Active(true);
+    examDetails.set_Setup(false);
     Paper ActivePaper = this.paperRepo.save(paper);
-
+    this.examDetailsRepo.save(examDetails);
+    
     List<InvitedStudents> students = this.invitationRepo.getAllStudentByPaperId(paperId);
 
     for (InvitedStudents invitedStudents : students) {
@@ -235,7 +275,8 @@ public class PaperServiceImpl implements PaperService {
           .orElseThrow(() -> new ResourceNotFoundException("Student ", "StudentID", invitedStudents.getStudentId()));
       User user = this.userRepo.findById(invitedStudents.getStudentId())
           .orElseThrow(() -> new ResourceNotFoundException("user ", "userID", invitedStudents.getStudentId()));
-      String msg = "Use_Name => " + student.getEmail() + "\nPassword => " + user.getPassword();
+
+      String msg = "User_Name => " +student.getEmail()+ "  \n  Password =>" + user.getPassword();
 
       this.emailServiceImpl.sendFormateMail(student.getEmail(), msg, "login crenditials", user.getRole());
 
@@ -243,6 +284,7 @@ public class PaperServiceImpl implements PaperService {
 
     log.info("paperServiceImpl activatePaper  method Ends");
 
+  }
     return "Paper Published Successfully";
   }
 
@@ -253,9 +295,10 @@ public class PaperServiceImpl implements PaperService {
     List<ExamDetails> examDetails = new ArrayList<>();
 
     for (Assessment assessment : assment) {
-      AttemptedPapers  attemptedPapers = this.attemptepaperRepo.getAllAttemptedPaperbyStudentID(userId, assessment.getPaperId());
+      AttemptedPapers attemptedPapers = this.attemptepaperRepo.getAllAttemptedPaperbyStudentID(userId,
+          assessment.getPaperId());
       ExamDetails examDetail = this.examDetailsRepo.getExamDetailsByPaperID(assessment.getPaperId());
-      if (attemptedPapers!=null) {
+      if (attemptedPapers != null) {
         examDetail.set_attempted(true);
       }
       examDetails.add(examDetail);
@@ -277,8 +320,8 @@ public class PaperServiceImpl implements PaperService {
   }
 
   @Override
-  public ExamDetails GetattemptedStudents(String paperId) {
-    AttemptedPapers attemptedPapers = this.attemptepaperRepo.GetattemptedStudentsByPaperId(paperId);
+  public ExamDetails GetattemptedStudents(String paperId, String studentId) {
+    AttemptedPapers attemptedPapers = this.attemptepaperRepo.getAllAttemptedPaperbyStudentID(studentId, paperId);
     Student student = this.studentRepo.findById(attemptedPapers.getStudentId())
         .orElseThrow(() -> new ResourceNotFoundException("Student", "StudentID", attemptedPapers.getStudentId()));
     ExamDetails examDetails = this.examDetailsRepo.getExamDetailsByPaperID(paperId);
@@ -287,5 +330,14 @@ public class PaperServiceImpl implements PaperService {
       examDetails.set_attempted(true);
     }
     return examDetails;
+  }
+
+  @Override
+  public List<Paper> getAllpaperByName(String name) {
+    List<Paper> pprName = paperRepo.getAllpaperByName(name);
+    if (pprName.isEmpty()) {
+      throw new NoSuchElementException("The Paper list is empty");
+    }
+    return pprName;
   }
 }

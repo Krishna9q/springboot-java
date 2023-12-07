@@ -1,7 +1,5 @@
 package examportal.portal.Repo;
 
-import java.util.List;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,5 +10,5 @@ import examportal.portal.Entity.Cheating;
 public interface CheatingRepo extends JpaRepository<Cheating,String> {
     
     @Query("SELECT c FROM Cheating c WHERE c.studentId=:studentId AND c.paperId=:paperId")
-    List<Cheating> getCourseByUseId(@Param("studentId") String studentId ,@Param("paperId") String paperId);
+    Cheating getCheatsOfA_Student_InA_Paper(@Param("studentId") String studentId ,@Param("paperId") String paperId);
 }

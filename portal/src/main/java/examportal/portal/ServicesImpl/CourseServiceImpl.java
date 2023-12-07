@@ -3,6 +3,8 @@ package examportal.portal.ServicesImpl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +27,7 @@ import jakarta.el.ELException;
 import net.bytebuddy.utility.RandomString;
 
 @Service
-public class CourseServiceImpl implements CourseService {
+public class CourseServiceimpl implements CourseService {
   @Autowired
   private CourseRepo courseRepo;
   
@@ -43,12 +45,11 @@ public class CourseServiceImpl implements CourseService {
   Logger log = LoggerFactory.getLogger("CourseServiceimpl.class");
 
   @Override
-  public List<Course> getAllCourse(Integer pageNumber) {
+  public List<Course> getAllCourse(Integer pageNumber, int size, String sortField, String sortOrder) {
     log.info("CourseServiceimpl,getCourse Method Start");
 
-    Integer pageSize = 2;
-    Sort s = Sort.by("userId").ascending();
-    Pageable p = PageRequest.of(pageNumber, pageSize, s);
+    Sort s = (sortOrder.equalsIgnoreCase("ASC"))?Sort.by(sortField).ascending():Sort.by(sortField).descending();
+    Pageable p = PageRequest.of(pageNumber, size, s);
     Page<Course> page = courseRepo.findAll(p);
     List<Course> courseAll = page.getContent();
     System.out.println(courseAll.size());
@@ -152,6 +153,17 @@ public class CourseServiceImpl implements CourseService {
     log.info("CourseServiceimpl, deleteCourse Method Start");
     courseRepo.deleteById(getId);
     log.info("CourseServiceimpl, deleteCourse Method Ends");
+  }
+
+  @Override
+  public List<Course> getAllCourseByStudentName(String name) {
+    log.info("CourseServiceimpl, getAllCourseByStudentName  Method Start");
+    List<Course> list = courseRepo. getAllCourseByStudentName(name);
+     if(list.isEmpty()){
+      throw new NoSuchElementException("The Paper list is empty");
+  }
+    log.info("CourseServiceimpl, getAllCourseByStudentName  Method and");
+   return list;
   }
 
 }
