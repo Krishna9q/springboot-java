@@ -8,8 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException.NotFound;
-
 import examportal.portal.Entity.AttemptedQuestions;
 import examportal.portal.Entity.Cheating;
 import examportal.portal.Entity.ExamDetails;
@@ -17,7 +15,6 @@ import examportal.portal.Entity.Questions;
 import examportal.portal.Entity.Result;
 import examportal.portal.Entity.Student;
 import examportal.portal.Exceptions.ResourceNotFoundException;
-import examportal.portal.Payloads.PaperDto;
 import examportal.portal.Payloads.ResultDto;
 import examportal.portal.Payloads.checkpaperDto;
 import examportal.portal.Repo.AttemptedQuestionsRepo;
@@ -175,10 +172,15 @@ public class ResultServiceImpl implements ResultService {
         
         List<Result> results = this.resultRepo.findAllByPaperIdOrderByPercentageDesc(paperId);
         List<Student> TopThree = new ArrayList<>();
-        
+        int count = 1;
         for (Result result : results) {
+            if (count==4) {
+                break;
+                
+            }
             Student student = this.studentRepo.findById(result.getStudentID()).orElseThrow(()-> new ResourceNotFoundException("Student", "StudentId", result.getStudentID()));
             TopThree.add(student);
+            count++;
         }
         return TopThree;
     }
