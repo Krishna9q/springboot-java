@@ -1,6 +1,9 @@
-FROM gradle:8.3.0-azul/zulu-openjdk:17.0.0
-WORKDIR /portal
+
+
+
+FROM azul/zulu-openjdk:17.0.0
 CMD ./gradlew clean build
+WORKDIR /portal
 COPY build/libs/portal.jar portal.jar
-ENTRYPOINT ["java", "-jar", "portal.jar"]
+CMD ["java", "-jar", "portal.jar"]
 
