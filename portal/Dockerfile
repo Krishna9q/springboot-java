@@ -2,8 +2,8 @@
 # RUN gradle clean build
 
 FROM azul/zulu-openjdk:17-latest
-VOLUME /tmp
-COPY build/libs/*.jar portal.jar
+WORKDIR portal
+COPY build/libs/portal-plain.jar portal.jar
 ENTRYPOINT ["java","-jar","portal.jar"]
 
 # FROM azul/zulu-openjdk:17.0.0
