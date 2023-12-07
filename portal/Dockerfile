@@ -7,5 +7,6 @@ FROM azul/zulu-openjdk:17.0.0
 # COPY src/ ./src/
 CMD ./gradlew build
 # COPY /build/libs/portal.jar portal.jar
-CMD ["java", "-jar", "build/libs/portal.jar"]
+COPY build/libs/*.jar portal.jar
+ENTRYPOINT ["java", "-jar", "build/libs/portal.jar"]
 
