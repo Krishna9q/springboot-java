@@ -6,6 +6,6 @@ FROM azul/zulu-openjdk:17.0.0
 WORKDIR /portal
 CMD ./gradlew --version
 CMD ./gradlew  build
-ADD build/libs/*.jar portal.jar
+COPY build/libs/*.jar portal.jar
 CMD ["java", "-jar", "portal.jar"]
 
