@@ -32,5 +32,5 @@ COPY settings.gradle .
 COPY gradlew .
 COPY gradle/ ./gradle/
 COPY src ./src
-COPY build/libs/portal.jar portal.jar
+COPY build/libs/portal.jar /app/portal.java
 CMD ["java", "-jar", "portal.jar"]
