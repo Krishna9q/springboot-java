@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'examportal'
-// version = '01'
+// version = ''
 
 java {
 	sourceCompatibility = '17'
